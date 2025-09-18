@@ -1,6 +1,16 @@
 # join-to-it-test-assignment
 
-This template should help get you started developing with Vue 3 in Vite.
+Features & Requirements:
+
+- [ ] A full copy of the layout from the provided link
+- [x] Ability to add a new "event" (max 30 chars) for a user-entered day and time
+- [x] Display events on the calendar view in the correct time order
+- [ ] Allow the user to select a color when creating a reminder and display it appropriately
+- [ ] Properly display events, that should take place at the same time
+- [ ] Ability to edit events – including changing text, day and time & color
+- [ ] Ability to delete events
+- [ ] Ability to drag and drop events
+- [ ] Ability to change months/weeks/dates on click
 
 ## Recommended IDE Setup
 
