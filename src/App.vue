@@ -2,18 +2,29 @@
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import listPlugin from '@fullcalendar/list'
+
 import { reactive, ref } from 'vue'
-import type { CalendarOptions } from '@fullcalendar/core/index.js'
+import { Calendar, type CalendarOptions } from '@fullcalendar/core/index.js'
 
 import { useEventStore } from './stores/events'
 import NewEventModal from './NewEventModal.vue'
 import { storeToRefs } from 'pinia'
+import { DayGridView } from '@fullcalendar/daygrid/internal.js'
 const eventStore = useEventStore()
 
 const { events } = storeToRefs(eventStore)
+const calendarRef = ref<{ getApi: () => Calendar }>()
+type calendarViews = 'dayGridMonth' | 'dayGridWeek' | 'timeGridDay' | 'listWeek'
+const changeCalendarView = (newView: calendarViews) => {
+  const calendarApi = calendarRef.value?.getApi()
+  calendarApi?.changeView(newView)
+}
 const calendarOptions: CalendarOptions = reactive({
-  plugins: [dayGridPlugin, interactionPlugin],
+  plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
+
   weekends: true,
   locale: 'ua',
   firstDay: 1,
@@ -43,9 +54,14 @@ const handleSubmit = () => {
 </script>
 
 <template>
+  <button @click="changeCalendarView('dayGridMonth')">Month</button>
+  <button @click="changeCalendarView('dayGridWeek')">Week</button>
+  <button @click="changeCalendarView('timeGridDay')">Day</button>
+  <button @click="changeCalendarView('listWeek')">List</button>
+
   <button @click="toggleWeekends">Toggle weekends</button>
   <button @click="toggleNewEventModal">Add event</button>
-  <FullCalendar :options="calendarOptions">
+  <FullCalendar ref="calendarRef" :options="calendarOptions">
     <template v-slot:eventContent="arg">
       <b>{{ arg.timeText }}</b>
       <i>{{ arg.event.title }}</i></template
