@@ -24,6 +24,7 @@ const changeCalendarView = (newView: calendarViews) => {
 const calendarOptions: CalendarOptions = reactive({
   plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
+  editable: true,
 
   weekends: true,
   locale: 'ua',

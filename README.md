@@ -9,7 +9,7 @@ Features & Requirements:
 - [x] Properly display events, that should take place at the same time
 - [ ] Ability to edit events – including changing text, day and time & color
 - [ ] Ability to delete events
-- [ ] Ability to drag and drop events
+- [x] Ability to drag and drop events
 - [x] Ability to change months/weeks/dates on click
 
 ## Recommended IDE Setup
