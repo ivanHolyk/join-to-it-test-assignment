@@ -84,9 +84,9 @@ async function restoreOriginal() {
   }
 
   title.value = found.title ?? ''
-  startDatetime.value = (found as any).start ?? (found as any).startDatetime ?? ''
-  endDatetime.value = (found as any).end ?? (found as any).endDatetime ?? ''
-  eventColor.value = (found as any).eventColor ?? (found as any).color ?? ''
+  startDatetime.value = found.start?.toString() ?? ''
+  endDatetime.value = found.end?.toString() ?? ''
+  eventColor.value = found.backgroundColor ?? ''
   allDay.value = !!found.allDay
 
   const s = new Date(startDatetime.value)

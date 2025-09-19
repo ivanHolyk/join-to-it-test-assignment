@@ -1,5 +1,5 @@
 type RGB = { r: number; g: number; b: number }
-type PickOptions = { prefer?: 'black' | 'white' | 'contrast'; minContrast?: number }
+
 type PickResult = {
   color: '#000' | '#fff'
   meetsContrast: boolean
@@ -47,28 +47,29 @@ function contrastRatio(l1: number, l2: number): number {
   return (L1 + 0.05) / (L2 + 0.05)
 }
 
-export function pickForegroundColor(
-  bgColor: string,
-  options: PickOptions = {},
-): '#000' | '#fff' | PickResult {
-  const pref = options.prefer ?? 'contrast'
+export function pickForegroundColor(bgColor: string): '#000' | '#fff' | PickResult {
+  const rawBias = 0.6
+  const bias = Math.max(-0.95, Math.min(0.95, rawBias))
+
   const rgb = parseColor(bgColor)
   const Lbg = relativeLuminance(rgb)
   const contrastWithBlack = contrastRatio(Lbg, 0)
   const contrastWithWhite = contrastRatio(1, Lbg)
 
-  let color: '#000' | '#fff' = contrastWithBlack >= contrastWithWhite ? '#000' : '#fff'
-  if (pref === 'black') color = '#000'
-  if (pref === 'white') color = '#fff'
+  const scoreWhite = contrastWithWhite * (1 + bias)
+  const scoreBlack = contrastWithBlack * (1 - bias)
 
-  if (options.minContrast) {
-    return {
-      color,
-      meetsContrast: Math.max(contrastWithBlack, contrastWithWhite) >= options.minContrast,
-      contrastWithBlack,
-      contrastWithWhite,
-    }
-  }
+  let color: '#000' | '#fff' = scoreBlack >= scoreWhite ? '#000' : '#fff'
 
+  console.log({
+    rgb,
+    Lbg,
+    bgColor,
+    color,
+    contrastWithBlack,
+    contrastWithWhite,
+    scoreBlack,
+    scoreWhite,
+  })
   return color
 }

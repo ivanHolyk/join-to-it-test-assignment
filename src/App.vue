@@ -38,6 +38,7 @@ const calendarOptions: CalendarOptions = reactive({
     meridiem: true,
     hour12: false,
   },
+  eventColor: '#3B86FF',
 })
 
 const newEventModal = ref(false)
