@@ -12,24 +12,12 @@ import { useEventStore } from './stores/events'
 import NewEventModal from './NewEventModal.vue'
 import EditEventModal from './EditEventModal.vue'
 import { storeToRefs } from 'pinia'
+import { formatDateTimeLocal } from './utils/dateFormatter'
 
 const eventStore = useEventStore()
-const { events, selectedEventId, selectedDate } = storeToRefs(eventStore)
+const { events } = storeToRefs(eventStore)
 const calendarRef = ref<{ getApi: () => Calendar }>()
-type calendarViews = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'
-const changeCalendarView = (newView: calendarViews) => {
-  const calendarApi = calendarRef.value?.getApi()
-  calendarApi?.changeView(newView)
-}
-function formatDateTimeLocal(d: Date) {
-  const pad = (n: number) => (n < 10 ? '0' + n : '' + n)
-  const yyyy = d.getFullYear()
-  const mm = pad(d.getMonth() + 1)
-  const dd = pad(d.getDate())
-  const hh = pad(d.getHours())
-  const min = pad(d.getMinutes())
-  return `${yyyy}-${mm}-${dd}T${hh}:${min}`
-}
+
 const calendarOptions: CalendarOptions = reactive({
   plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
@@ -55,13 +43,16 @@ const calendarOptions: CalendarOptions = reactive({
 
   dateClick: function (info: DateClickArg) {
     const dtStr = formatDateTimeLocal(info.date)
-    eventStore.selectDate(dtStr)
+
+    const js = (info as any).jsEvent as MouseEvent | undefined
+    const pos = js ? { x: js.clientX, y: js.clientY } : null
+
+    eventStore.selectDate(dtStr, pos)
     newEventModal.value = true
   },
 })
 
 const newEventModal = ref(false)
-const toggleNewEventModal = () => (newEventModal.value = !newEventModal.value)
 
 const handleEventClick = (info: EventClickArg) => {
   const clickedId = info.event.id
@@ -85,17 +76,10 @@ const isEditing = computed(() => !!eventStore.selectedEventId)
 
 <template>
   <div class="page-card">
-    <button @click="changeCalendarView('dayGridMonth')">Month</button>
-    <button @click="changeCalendarView('timeGridWeek')">Week</button>
-    <button @click="changeCalendarView('timeGridDay')">Day</button>
-    <button @click="changeCalendarView('listWeek')">List</button>
-
-    <button @click="toggleNewEventModal">Add event</button>
-
     <FullCalendar ref="calendarRef" :options="calendarOptions">
       <template v-slot:eventContent="arg" :color="arg.event.backgroundColor">
         <span style="margin-left: 0.33rem">
-          <b>{{ arg.timeText }}</b> <i>{{ arg.event.title }}</i></span
+          <b>{{ arg.timeText }}</b> {{ arg.event.title }}</span
         >
       </template>
     </FullCalendar>

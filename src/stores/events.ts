@@ -158,11 +158,14 @@ export const useEventStore = defineStore('events', () => {
   }
 
   const selectedDate = ref<string | null>(null)
-  function selectDate(isoOrEmpty: string | null) {
+  const selectedPosition = ref<{ x: number; y: number } | null>(null)
+  function selectDate(isoOrEmpty: string | null, pos?: { x: number; y: number } | null) {
     selectedDate.value = isoOrEmpty
+    selectedPosition.value = pos ?? null
   }
   function clearSelectedDate() {
     selectedDate.value = null
+    selectedPosition.value = null
   }
 
   return {
@@ -176,6 +179,7 @@ export const useEventStore = defineStore('events', () => {
     deleteEvent,
 
     selectedDate,
+    selectedPosition,
     selectDate,
     clearSelectedDate,
   }
