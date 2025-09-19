@@ -88,30 +88,67 @@ export const useEventStore = defineStore('events', () => {
     }
   }
 
+  function ensureEndAfterStart(start?: string, end?: string) {
+    if (!start) return end
+    const s = new Date(start)
+    if (isNaN(s.getTime())) return end
+    if (!end) {
+      const candidate = new Date(s.getTime())
+      candidate.setHours(candidate.getHours() + 1)
+      return candidate.toISOString().slice(0, 16)
+    }
+    const e = new Date(end)
+    if (isNaN(e.getTime()) || e.getTime() <= s.getTime()) {
+      const candidate = new Date(s.getTime())
+      candidate.setHours(candidate.getHours() + 1)
+      return candidate.toISOString().slice(0, 16)
+    }
+    return end
+  }
+
   const addNewEvent = (input: EventInput) => {
-    const bg = input.backgroundColor ?? input.borderColor
+    const start = (input as any).start
+    const end = ensureEndAfterStart(start, (input as any).end)
+    const bg =
+      (input as any).backgroundColor ?? (input as any).borderColor ?? (input as any).eventColor
     const textColor = computeTextColorFromBg(bg)
-    events.push({ ...(input as any), id: uuidv4(), textColor })
+    events.push({ ...(input as any), id: uuidv4(), end, textColor })
   }
 
   function updateEvent(payload: Partial<EventInput> & { id: string }) {
     const idx = events.findIndex((e: any) => String(e.id) === String(payload.id))
+
+    const startCandidate = (payload as any).start ?? (idx !== -1 ? events[idx].start : undefined)
+    const endCandidate = (payload as any).end ?? (idx !== -1 ? events[idx].end : undefined)
+    const correctedEnd = ensureEndAfterStart(
+      startCandidate as string | undefined,
+      endCandidate as string | undefined,
+    )
+
     if (idx === -1) {
-      const bg = (payload as any).backgroundColor ?? (payload as any).borderColor
+      const bg =
+        (payload as any).backgroundColor ??
+        (payload as any).borderColor ??
+        (payload as any).eventColor
       const textColor = computeTextColorFromBg(bg)
-      events.push({ ...(payload as EventInput), textColor })
+      events.push({ ...(payload as EventInput), end: correctedEnd, textColor })
       return
     }
 
-    const incomingBg = (payload as any).backgroundColor ?? (payload as any).borderColor
+    const incomingBg =
+      (payload as any).backgroundColor ??
+      (payload as any).borderColor ??
+      (payload as any).eventColor
 
     const base = { ...(events[idx] as any) }
     const updated = { ...base, ...(payload as any) }
 
+    if (correctedEnd) updated.end = correctedEnd
+
     if (incomingBg) {
       updated.textColor = computeTextColorFromBg(incomingBg)
     } else if (!updated.textColor) {
-      const existingBg = updated.backgroundColor ?? updated.borderColor
+      const existingBg = updated.backgroundColor ?? updated.borderColor ?? updated.eventColor
       updated.textColor = computeTextColorFromBg(existingBg)
     }
 

@@ -41,8 +41,18 @@ const titleEmpty = computed(() => titleLength.value === 0)
 const titleTooLong = computed(() => titleLength.value > TITLE_MAX)
 const startDatetimeEmpty = computed(() => startDatetime.value.trim() === '')
 const endDatetimeEmpty = computed(() => endDatetime.value.trim() === '')
+
+const startAfterEnd = computed(() => {
+  if (!startDatetime.value || !endDatetime.value) return false
+  const s = new Date(startDatetime.value)
+  const e = new Date(endDatetime.value)
+  if (isNaN(s.getTime()) || isNaN(e.getTime())) return false
+  return s.getTime() > e.getTime()
+})
+
 const isValid = computed(
-  () => !titleEmpty.value && !titleTooLong.value && !startDatetimeEmpty.value,
+  () =>
+    !titleEmpty.value && !titleTooLong.value && !startDatetimeEmpty.value && !startAfterEnd.value,
 )
 
 function markTouched(field: 'title' | 'startDatetime' | 'endDatetime' | 'eventColor' | 'allDay') {
@@ -80,6 +90,10 @@ function resetForm() {
 function handleSubmit() {
   touched.value.title = true
   touched.value.startDatetime = true
+  touched.value.endDatetime = true
+
+  if (startAfterEnd.value) return
+
   if (!isValid.value) return
   eventStore.addNewEvent({
     title: titleTrimmed.value,
@@ -181,10 +195,15 @@ function onEndInput() {
           type="datetime-local"
           @blur="() => markTouched('endDatetime')"
           @input="onEndInput"
-          :aria-invalid="touched.endDatetime && endDatetimeEmpty ? 'true' : 'false'"
+          :aria-invalid="
+            touched.endDatetime && (endDatetimeEmpty || startAfterEnd) ? 'true' : 'false'
+          "
           required
         />
         <p v-if="touched.endDatetime && endDatetimeEmpty" class="error">Date & time is required.</p>
+        <p v-if="(touched.startDatetime || touched.endDatetime) && startAfterEnd" class="error">
+          End must be after start.
+        </p>
       </div>
       <div class="field">
         <label for="color">Event color</label>
