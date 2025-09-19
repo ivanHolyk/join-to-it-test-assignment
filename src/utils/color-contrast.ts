@@ -61,15 +61,5 @@ export function pickForegroundColor(bgColor: string): '#000' | '#fff' | PickResu
 
   let color: '#000' | '#fff' = scoreBlack >= scoreWhite ? '#000' : '#fff'
 
-  console.log({
-    rgb,
-    Lbg,
-    bgColor,
-    color,
-    contrastWithBlack,
-    contrastWithWhite,
-    scoreBlack,
-    scoreWhite,
-  })
   return color
 }
