@@ -7,8 +7,8 @@ Features & Requirements:
 - [x] Display events on the calendar view in the correct time order
 - [x] Allow the user to select a color when creating a reminder and display it appropriately
 - [x] Properly display events, that should take place at the same time
-- [ ] Ability to edit events – including changing text, day and time & color
-- [ ] Ability to delete events
+- [x] Ability to edit events – including changing text, day and time & color
+- [x] Ability to delete events
 - [x] Ability to drag and drop events
 - [x] Ability to change months/weeks/dates on click
 

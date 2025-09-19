@@ -5,16 +5,17 @@ import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 
-import { reactive, ref } from 'vue'
-import { Calendar, type CalendarOptions } from '@fullcalendar/core/index.js'
+import { reactive, ref, computed } from 'vue'
+import { Calendar, type CalendarOptions, type EventClickArg } from '@fullcalendar/core/index.js'
 
 import { useEventStore } from './stores/events'
 import NewEventModal from './NewEventModal.vue'
+import EditEventModal from './EditEventModal.vue'
 import { storeToRefs } from 'pinia'
-import { DayGridView } from '@fullcalendar/daygrid/internal.js'
-const eventStore = useEventStore()
 
-const { events } = storeToRefs(eventStore)
+const eventStore = useEventStore()
+const { events, selectedEventId } = storeToRefs(eventStore)
+
 const calendarRef = ref<{ getApi: () => Calendar }>()
 type calendarViews = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'
 const changeCalendarView = (newView: calendarViews) => {
@@ -39,11 +40,20 @@ const calendarOptions: CalendarOptions = reactive({
   },
 })
 
+const newEventModal = ref(false)
+const toggleNewEventModal = () => (newEventModal.value = !newEventModal.value)
+
 const toggleWeekends = () => {
   calendarOptions.weekends = !calendarOptions.weekends
 }
-const newEventModal = ref(false)
-const toggleNewEventModal = () => (newEventModal.value = !newEventModal.value)
+
+const handleEventClick = (info: EventClickArg) => {
+  const clickedId = info.event.id
+  console.log(`event id to edit: ${clickedId}`)
+  eventStore.selectEvent(clickedId)
+}
+
+calendarOptions.eventClick = handleEventClick
 
 const handleCancel = () => {
   console.log('recieved cancel')
@@ -51,9 +61,10 @@ const handleCancel = () => {
 }
 const handleSubmit = () => {
   console.log('recieved submit')
-
   newEventModal.value = false
 }
+
+const isEditing = computed(() => !!eventStore.selectedEventId)
 </script>
 
 <template>
@@ -64,17 +75,17 @@ const handleSubmit = () => {
 
   <button @click="toggleWeekends">Toggle weekends</button>
   <button @click="toggleNewEventModal">Add event</button>
+
   <FullCalendar ref="calendarRef" :options="calendarOptions">
     <template v-slot:eventContent="arg" :color="arg.event.backgroundColor">
       <b>{{ arg.timeText }}</b>
       <i>{{ arg.event.title }}</i>
-    </template></FullCalendar
-  >
-  <NewEventModal
-    v-show="newEventModal"
-    @cancel="handleCancel"
-    @submit="handleSubmit"
-  ></NewEventModal>
+    </template>
+  </FullCalendar>
+
+  <NewEventModal v-show="newEventModal" @cancel="handleCancel" @submit="handleSubmit" />
+
+  <EditEventModal v-show="isEditing" />
 </template>
 
 <style scoped></style>
