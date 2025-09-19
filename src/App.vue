@@ -29,10 +29,12 @@ const calendarOptions: CalendarOptions = reactive({
   locale: 'ua',
   firstDay: 1,
   events: events?.value,
+  eventDisplay: 'block',
   eventTimeFormat: {
     hour: '2-digit',
     minute: '2-digit',
-    meridiem: false,
+    meridiem: true,
+    hour12: false,
   },
 })
 
@@ -62,10 +64,10 @@ const handleSubmit = () => {
   <button @click="toggleWeekends">Toggle weekends</button>
   <button @click="toggleNewEventModal">Add event</button>
   <FullCalendar ref="calendarRef" :options="calendarOptions">
-    <template v-slot:eventContent="arg">
+    <template v-slot:eventContent="arg" :color="arg.event.backgroundColor">
       <b>{{ arg.timeText }}</b>
-      <i>{{ arg.event.title }}</i></template
-    ></FullCalendar
+      <i>{{ arg.event.title }}</i>
+    </template></FullCalendar
   >
   <NewEventModal
     v-show="newEventModal"
