@@ -16,7 +16,7 @@ const eventStore = useEventStore()
 
 const { events } = storeToRefs(eventStore)
 const calendarRef = ref<{ getApi: () => Calendar }>()
-type calendarViews = 'dayGridMonth' | 'dayGridWeek' | 'timeGridDay' | 'listWeek'
+type calendarViews = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'
 const changeCalendarView = (newView: calendarViews) => {
   const calendarApi = calendarRef.value?.getApi()
   calendarApi?.changeView(newView)
@@ -25,7 +25,7 @@ const calendarOptions: CalendarOptions = reactive({
   plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
   editable: true,
-
+  nowIndicator: true,
   weekends: true,
   locale: 'ua',
   firstDay: 1,
@@ -58,7 +58,7 @@ const handleSubmit = () => {
 
 <template>
   <button @click="changeCalendarView('dayGridMonth')">Month</button>
-  <button @click="changeCalendarView('dayGridWeek')">Week</button>
+  <button @click="changeCalendarView('timeGridWeek')">Week</button>
   <button @click="changeCalendarView('timeGridDay')">Day</button>
   <button @click="changeCalendarView('listWeek')">List</button>
 
