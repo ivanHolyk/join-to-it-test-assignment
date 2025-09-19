@@ -1,0 +1,61 @@
+:root {
+  --fc-today-bg-color: #f5f6fa;
+
+  --fc-border-color: #eaf0f4;
+
+  --fc-button-bg-color: tranparent;
+  --fc-button-border-color: #d7dae2;
+  --fc-button-text-color: #4d4f5c;
+
+  --fc-button-active-bg-color: tranparent;
+  --fc-button-active-border-color: #d7dae2;
+  --fc-button-active-text-color: #4d4f5c;
+
+  --fc-button-hover-border-color: #d7dae2;
+}
+.fc-col-header-cell {
+  background-color: #f5f6fa;
+}
+
+.fc-button {
+  background-color: transparent;
+  border-radius: 4px;
+}
+.fc-button-primary {
+  background-color: transparent;
+  border-radius: 4px;
+}
+.fc-button-primary:hover,
+.fc .fc-button-primary:hover {
+  background-color: transparent;
+  border-radius: 4px;
+}
+
+.fc-button-group {
+  box-shadow: 0px 2px 3px #0000000d;
+}
+.fc-button-active {
+  background-color: transparent;
+  color: #3b86ff;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  color: #3b86ff;
+  box-shadow: none;
+}
+.fc .fc-button-primary .fc-button-active,
+.fc .fc-button-primary:not(:disabled).fc-button-active:focus,
+.fc .fc-button-primary:focus,
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled):active:focus {
+  box-shadow: none;
+}
+
+.fc-today-button,
+.fc-today-button .fc-button-primary,
+.fc-button-primary:disabled,
+.fc .fc-button-primary:disabled {
+  color: #3b86ff;
+}
+.fc-today-button:disabled {
+  opacity: 1 !important;
+}

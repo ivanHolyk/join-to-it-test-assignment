@@ -66,6 +66,10 @@ function startCancel() {
 
 async function handleCancel() {
   resetForm()
+
+  try {
+    eventStore.clearSelectedDate()
+  } catch (e) {}
   await nextTick()
   ignoreBlur.value = false
   emit('cancel')
@@ -104,6 +108,11 @@ function handleSubmit() {
     backgroundColor: eventColor.value,
     allDay: allDay.value,
   })
+
+  try {
+    eventStore.clearSelectedDate()
+  } catch (e) {}
+
   emit('submit', {
     title: titleTrimmed.value,
     startDatetime: startDatetime.value,
@@ -147,6 +156,20 @@ watch(startDatetime, (newVal) => {
 function onEndInput() {
   endManuallyEdited.value = true
 }
+
+watch(
+  () => eventStore.selectedDate,
+  (newSelected) => {
+    if (!newSelected) {
+      return
+    }
+
+    startDatetime.value = String(newSelected)
+
+    endManuallyEdited.value = false
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

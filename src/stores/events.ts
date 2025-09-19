@@ -157,6 +157,14 @@ export const useEventStore = defineStore('events', () => {
     if (String(selectedEventId.value) === String(id)) selectedEventId.value = null
   }
 
+  const selectedDate = ref<string | null>(null)
+  function selectDate(isoOrEmpty: string | null) {
+    selectedDate.value = isoOrEmpty
+  }
+  function clearSelectedDate() {
+    selectedDate.value = null
+  }
+
   return {
     events,
     addNewEvent,
@@ -166,5 +174,9 @@ export const useEventStore = defineStore('events', () => {
     clearSelection,
     updateEvent,
     deleteEvent,
+
+    selectedDate,
+    selectDate,
+    clearSelectedDate,
   }
 })

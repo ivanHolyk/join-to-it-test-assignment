@@ -1,92 +1,49 @@
 <script setup lang="ts">
-import FullCalendar from '@fullcalendar/vue3'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import listPlugin from '@fullcalendar/list'
-
-import { reactive, ref, computed } from 'vue'
-import { Calendar, type CalendarOptions, type EventClickArg } from '@fullcalendar/core/index.js'
-
-import { useEventStore } from './stores/events'
-import NewEventModal from './NewEventModal.vue'
-import EditEventModal from './EditEventModal.vue'
-import { storeToRefs } from 'pinia'
-
-const eventStore = useEventStore()
-const { events, selectedEventId } = storeToRefs(eventStore)
-
-const calendarRef = ref<{ getApi: () => Calendar }>()
-type calendarViews = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'
-const changeCalendarView = (newView: calendarViews) => {
-  const calendarApi = calendarRef.value?.getApi()
-  calendarApi?.changeView(newView)
-}
-const calendarOptions: CalendarOptions = reactive({
-  plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
-  initialView: 'dayGridMonth',
-  editable: true,
-  nowIndicator: true,
-  weekends: true,
-  locale: 'ua',
-  firstDay: 1,
-  events: events?.value,
-  eventDisplay: 'block',
-  eventTimeFormat: {
-    hour: '2-digit',
-    minute: '2-digit',
-    meridiem: true,
-    hour12: false,
-  },
-  eventColor: '#3B86FF',
-})
-
-const newEventModal = ref(false)
-const toggleNewEventModal = () => (newEventModal.value = !newEventModal.value)
-
-const toggleWeekends = () => {
-  calendarOptions.weekends = !calendarOptions.weekends
-}
-
-const handleEventClick = (info: EventClickArg) => {
-  const clickedId = info.event.id
-  console.log(`event id to edit: ${clickedId}`)
-  eventStore.selectEvent(clickedId)
-}
-
-calendarOptions.eventClick = handleEventClick
-
-const handleCancel = () => {
-  console.log('recieved cancel')
-  newEventModal.value = false
-}
-const handleSubmit = () => {
-  console.log('recieved submit')
-  newEventModal.value = false
-}
-
-const isEditing = computed(() => !!eventStore.selectedEventId)
+import Sidebar from '@/components/Sidebar.vue'
+import Header from '@/components/Header.vue'
 </script>
 
 <template>
-  <button @click="changeCalendarView('dayGridMonth')">Month</button>
-  <button @click="changeCalendarView('timeGridWeek')">Week</button>
-  <button @click="changeCalendarView('timeGridDay')">Day</button>
-  <button @click="changeCalendarView('listWeek')">List</button>
+  <div class="app">
+    <Sidebar />
 
-  <button @click="toggleWeekends">Toggle weekends</button>
-  <button @click="toggleNewEventModal">Add event</button>
+    <div class="content">
+      <Header />
 
-  <FullCalendar ref="calendarRef" :options="calendarOptions">
-    <template v-slot:eventContent="arg" :color="arg.event.backgroundColor">
-      <b>{{ arg.timeText }}</b>
-      <i>{{ arg.event.title }}</i>
-    </template>
-  </FullCalendar>
-
-  <NewEventModal v-show="newEventModal" @cancel="handleCancel" @submit="handleSubmit" />
-
-  <EditEventModal v-show="isEditing" />
+      <main class="main">
+        <RouterView />
+      </main>
+    </div>
+  </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+$app-bg: #f4f4f8;
+$content-width: 1100px;
+
+.app {
+  display: flex;
+  min-height: 100vh;
+  background: $app-bg;
+  color: #222;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.main {
+  flex: 1;
+  overflow: auto;
+  padding: 32px 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.main > * {
+  width: 100%;
+  max-width: $content-width;
+}
+</style>
